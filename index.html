@@ -84,12 +84,56 @@
             TaskGround: Structured Executable Task Inference for Full-Scene Household Reasoning
           </h1>
 
-          <div class="publication-venue">
-            <span class="live-dot"></span>
-            Project Page Coming Soon
-            <span class="icon" style="color: #f97316;" aria-label="Highlight">
-              <i class="fas fa-fire"></i>
-            </span>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><a href="https://aaronfengzy.github.io/" target="_blank" rel="noopener noreferrer">ZhiYuan Feng</a><sup>1,&dagger;</sup>,</span>
+            <span class="author-block"><a href="https://yudeng.github.io/" target="_blank" rel="noopener noreferrer">Yu Deng</a><sup>2</sup>,</span>
+            <span class="author-block">Ruichuan An<sup>3,&dagger;</sup>,</span>
+            <span class="author-block">Zhenhua Liu<sup>2</sup>,</span>
+            <span class="author-block">Qixiu Li<sup>1,&dagger;</sup>,</span>
+            <span class="author-block">Keming Wu<sup>1</sup>,</span>
+            <span class="author-block">Zhiying Du<sup>4,&dagger;</sup>,</span>
+            <span class="author-block">Weijie Wang<sup>5</sup>,</span>
+            <span class="author-block">Haoxiao Wang<sup>5</sup>,</span>
+            <span class="author-block">Shuang Chen<sup>5</sup>,</span>
+            <span class="author-block">Sicheng Xu<sup>2</sup>,</span>
+            <span class="author-block">Yaobo Liang<sup>2</sup>,</span>
+            <span class="author-block"><a href="https://jlyang.org/" target="_blank" rel="noopener noreferrer">Jiaolong Yang</a><sup>2,&#9993;</sup>,</span>
+            <span class="author-block"><a href="https://www.microsoft.com/en-us/research/people/bainguo/" target="_blank" rel="noopener noreferrer">Baining Guo</a><sup>2</sup></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Tsinghua University</span>
+            <span class="author-block"><sup>2</sup>Microsoft Research Asia</span>
+            <span class="author-block"><sup>3</sup>Peking University</span>
+          </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>4</sup>Fudan University</span>
+            <span class="author-block"><sup>5</sup>Zhejiang University</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2605.18109"
+                   class="external-link button is-small is-rounded is-dark"
+                   target="_blank" rel="noopener noreferrer">
+                  <span class="icon">
+                    <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://github.com/AaronFengZY/TaskGround"
+                   class="external-link button is-small is-rounded is-dark"
+                   target="_blank" rel="noopener noreferrer">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                </a>
+              </span>
+            </div>
           </div>
 
         </div>
@@ -97,6 +141,436 @@
     </div>
   </div>
 </section>
+
+<!-- ====== Teaser ====== -->
+<section class="hero teaser">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <figure class="teaser-figure">
+        <div class="figure-media">
+          <img src="./static/images/teaser.png" alt="TaskGround overview" class="figure-image">
+        </div>
+        <figcaption class="figure-caption">
+          <strong>TaskGround</strong> turns a <em>complete household scene</em> and a
+          <em>situated, conversational request</em> into a grounded skill-level action
+          sequence through a training-free <em>Ground&nbsp;&rarr;&nbsp;Infer&nbsp;&rarr;&nbsp;Execute</em>
+          pipeline &mdash; grounding only task-relevant entities, inferring and completing
+          executable task structure, and compiling it into actions, with up to
+          <strong>18&times; lower input-token cost</strong>.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Motivation / The Problem ====== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <span class="section-eyebrow">The Problem</span>
+        <h2 class="title is-3">Real Requests Aren't Clean Task Specs</h2>
+        <p class="section-lead">
+          In real homes, people don't hand a robot a tidy goal list &mdash; they speak in
+          situations. A request is grounded in the current scene and leaves the
+          <em>relevant objects</em>, <em>intended conditions</em>, and <em>ordering</em>
+          implicit. The agent must first figure out <strong>what to plan for</strong>.
+        </p>
+      </div>
+    </div>
+
+    <div class="motivation-grid">
+      <div class="moti-card moti-card--said">
+        <span class="moti-card__tag">What the user says</span>
+        <p class="moti-quote">
+          <span class="q">&ldquo;</span>The storm is getting worse, and rain is coming into
+          the office. My grandson is calling soon. Can you get my cup and the small table
+          ready in there?<span class="q">&rdquo;</span>
+        </p>
+        <div class="moti-speaker">
+          <img class="moti-avatar" src="./static/images/grandmom.png" alt="Grandmother">
+          <span>Grandmother, to her household robot</span>
+        </div>
+      </div>
+
+      <div class="moti-arrow"><i class="fas fa-arrow-right"></i></div>
+
+      <div class="moti-card moti-card--meant">
+        <span class="moti-card__tag">What it actually means</span>
+        <ul class="moti-list">
+          <li><b>Find hidden entities:</b> the office window, the dirty cup, the small table, the target room.</li>
+          <li><b>Recover intended goals:</b> the window must be <em>closed</em>, the table and cup <em>clean</em>, the cup <em>on</em> the table.</li>
+          <li><b>Respect ordering:</b> close the window first; clean the table <em>before</em> placing the cup on it.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="moti-foot">
+      None of this is stated in the words alone. Before any action, the agent must infer an
+      intermediate <span class="hl">executable task structure</span> from the
+      <b>complete scene</b> and the <b>situated request</b>. We call this setting
+      <b>full-scene household reasoning</b> &mdash; and it is what TaskGround is built to solve.
+    </p>
+  </div>
+</section>
+
+<!-- ====== TL;DR highlights ====== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-card__num">18<small>&times;</small></div>
+        <div class="stat-card__label">lower total input-token cost on large complete scenes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__num">9B <small>&asymp; GPT-5</small></div>
+        <div class="stat-card__label">Qwen3.5-9B becomes competitive with GPT-5 direct prompting</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__num">400</div>
+        <div class="stat-card__label">human-validated tasks in the FullHome benchmark</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card__num">Training<small>-free</small></div>
+        <div class="stat-card__label">model-agnostic; no task-specific tuning required</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Abstract ====== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <span class="section-eyebrow">Abstract</span>
+        <h2 class="title is-3">Full-Scene Household Reasoning</h2>
+        <div class="content has-text-justified">
+          <p>
+            In real home deployments, household agents must often act from a
+            <strong>complete household scene</strong> and a
+            <strong>situated household request</strong>, rather than from a clean task
+            specification. Such requests require an agent to identify task-relevant
+            entities, recover intended task conditions, and resolve ordering constraints
+            from surrounding scene context. We formalize this as
+            <em>full-scene household reasoning</em>: given a complete scene and a situated
+            request, the agent must infer <strong>executable task structure</strong> before
+            producing a grounded skill-level action sequence.
+          </p>
+          <p>
+            This setting is hard because complete scenes contain substantial task-irrelevant
+            information, making direct complete-scene prompting inefficient and error-prone &mdash;
+            and privacy and local-compute constraints favor compact open-weight models with
+            limited long-context reasoning. We propose <strong>TaskGround</strong>, a
+            training-free and model-agnostic <em>Ground&ndash;Infer&ndash;Execute</em>
+            framework that grounds complete scenes into compact task-relevant scene slices,
+            infers and completes executable task structure, and compiles it into grounded
+            skill-level actions. On <strong>FullHome</strong>, a human-validated suite of 400
+            tasks, TaskGround improves success rates by large margins across proprietary and
+            open-weight models, makes <strong>Qwen3.5-9B competitive with GPT-5</strong> while
+            cutting input-token cost by up to <strong>18&times;</strong>, and identifies
+            executable task-structure inference as a central bottleneck.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Challenges ====== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <span class="section-eyebrow">Why it's hard</span>
+        <h2 class="title is-3">From a Cluttered Scene to a Casual Request</h2>
+        <p class="section-lead">
+          A complete home has many rooms, objects, states and relations &mdash; while the
+          request leaves goals and ordering implicit. Three forces make naive complete-scene
+          prompting impractical.
+        </p>
+      </div>
+    </div>
+    <div class="challenge-grid">
+      <div class="challenge-card">
+        <span class="challenge-card__num">01</span>
+        <h3 class="challenge-card__title">Task-irrelevant clutter</h3>
+        <p class="challenge-card__body">
+          Complete scenes are dominated by irrelevant objects and relations, so feeding the
+          whole scene to an LLM is costly and error-prone.
+        </p>
+      </div>
+      <div class="challenge-card">
+        <span class="challenge-card__num">02</span>
+        <h3 class="challenge-card__title">Privacy pressure</h3>
+        <p class="challenge-card__body">
+          Detailed household state reveals personal spaces and routines, making it undesirable
+          to send complete-scene inputs to frontier proprietary models.
+        </p>
+      </div>
+      <div class="challenge-card">
+        <span class="challenge-card__num">03</span>
+        <h3 class="challenge-card__title">Local compute limits</h3>
+        <p class="challenge-card__body">
+          On-device deployment favors compact open-weight models that are harder pressed to
+          reason over long, cluttered inputs.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Method ====== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <span class="section-eyebrow">Method</span>
+        <h2 class="title is-3">The Ground &ndash; Infer &ndash; Execute Framework</h2>
+      </div>
+    </div>
+    <figure class="teaser-figure">
+      <div class="figure-media">
+        <img src="./static/images/framework.png" alt="TaskGround framework" class="figure-image">
+      </div>
+      <figcaption class="figure-caption">
+        TaskGround decomposes full-scene reasoning into three training-free stages, keeping
+        executability while drastically reducing the reasoning burden on the base model.
+      </figcaption>
+    </figure>
+    <div class="pipeline-grid">
+      <div class="pipe-card pipe-card--ground">
+        <span class="pipe-card__step">1</span>
+        <h3 class="pipe-card__title"><span>Ground</span> &mdash; scene slicing</h3>
+        <p class="pipe-card__body">
+          A single LLM call selects task-relevant entities from the complete scene
+          <em>S<sub>0</sub></em>; a compact scene slice <em>S<sub>r</sub></em> is then
+          reconstructed around them, cutting downstream input cost.
+        </p>
+      </div>
+      <div class="pipe-card pipe-card--infer">
+        <span class="pipe-card__step">2</span>
+        <h3 class="pipe-card__title"><span>Infer</span> &amp; complete</h3>
+        <p class="pipe-card__body">
+          Over the slice, the model infers raw goal predicates <em>g&#770;</em>, then completes
+          them into a consistent task structure <em>&tau;&#771;</em> using household priors and
+          process-critical subgoals &mdash; no oracle needed.
+        </p>
+      </div>
+      <div class="pipe-card pipe-card--execute">
+        <span class="pipe-card__step">3</span>
+        <h3 class="pipe-card__title"><span>Execute</span> &mdash; skill actions</h3>
+        <p class="pipe-card__body">
+          A fixed, task-agnostic executor resolves generic preconditions and compiles the
+          completed structure into a grounded action sequence <em>a<sub>1:T</sub></em>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== Results ====== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column">
+        <span class="section-eyebrow">Results</span>
+        <h2 class="title is-3">Main Results on FullHome</h2>
+        <p class="section-lead">
+          Goal SR and Process SR (%) on VirtualHome and BEHAVIOR. Cells shaded
+          <span style="background:#fce4ec;padding:0 0.3rem;border-radius:4px;">pink</span>
+          exceed <em>GPT-5 Naive</em>, the frontier direct-prompting reference per column;
+          <span style="color:#c0392b;font-weight:600;">(+&Delta;)</span> is TaskGround's gain
+          over the same model's Naive result; <strong>bold</strong> marks the best in each group.
+        </p>
+      </div>
+    </div>
+
+    <div class="results-wrap">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th rowspan="2">Model</th>
+            <th rowspan="2">Method</th>
+            <th class="th-group" colspan="2">VirtualHome</th>
+            <th class="th-group" colspan="2">BEHAVIOR</th>
+          </tr>
+          <tr>
+            <th class="vh-start">Goal SR</th>
+            <th>Process SR</th>
+            <th class="vh-start">Goal SR</th>
+            <th>Process SR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group-row"><td colspan="6">Proprietary models</td></tr>
+
+          <tr class="tg-row-naive">
+            <td class="model-col" rowspan="2">GPT-4o</td>
+            <td class="method-col">Naive</td>
+            <td class="vh-start">8.0</td><td>5.0</td>
+            <td class="vh-start">32.3</td><td>23.3</td>
+          </tr>
+          <tr class="tg-row model-sep">
+            <td class="method-col">TaskGround</td>
+            <td class="vh-start cell-hot">49.0<span class="dlt">(+41.0)</span></td>
+            <td class="cell-hot">37.0<span class="dlt">(+32.0)</span></td>
+            <td class="vh-start cell-hot">52.3<span class="dlt">(+20.0)</span></td>
+            <td class="cell-hot">35.5<span class="dlt">(+12.2)</span></td>
+          </tr>
+
+          <tr class="tg-row-naive">
+            <td class="model-col" rowspan="2">GPT-4.1</td>
+            <td class="method-col">Naive</td>
+            <td class="vh-start">14.0</td><td>4.0</td>
+            <td class="vh-start">32.3</td><td>17.1</td>
+          </tr>
+          <tr class="tg-row model-sep">
+            <td class="method-col">TaskGround</td>
+            <td class="vh-start cell-hot">57.0<span class="dlt">(+43.0)</span></td>
+            <td class="cell-hot">34.0<span class="dlt">(+30.0)</span></td>
+            <td class="vh-start cell-hot cell-best">64.6<span class="dlt">(+32.3)</span></td>
+            <td class="cell-hot">45.7<span class="dlt">(+28.6)</span></td>
+          </tr>
+
+          <tr class="tg-row-naive">
+            <td class="model-col" rowspan="2">Gemini-2.5-Flash</td>
+            <td class="method-col">Naive</td>
+            <td class="vh-start">0.5</td><td>2.0</td>
+            <td class="vh-start">9.2</td><td>5.7</td>
+          </tr>
+          <tr class="tg-row model-sep">
+            <td class="method-col">TaskGround</td>
+            <td class="vh-start cell-hot">48.5<span class="dlt">(+48.0)</span></td>
+            <td>19.0<span class="dlt">(+17.0)</span></td>
+            <td class="vh-start">38.5<span class="dlt">(+29.3)</span></td>
+            <td class="cell-hot">37.1<span class="dlt">(+31.4)</span></td>
+          </tr>
+
+          <tr class="tg-row-naive">
+            <td class="model-col" rowspan="2">GPT-5</td>
+            <td class="method-col">Naive</td>
+            <td class="vh-start">45.5</td><td>26.0</td>
+            <td class="vh-start">46.2</td><td>31.4</td>
+          </tr>
+          <tr class="tg-row model-sep">
+            <td class="method-col">TaskGround</td>
+            <td class="vh-start cell-hot cell-best">73.5<span class="dlt">(+28.0)</span></td>
+            <td class="cell-hot cell-best">46.0<span class="dlt">(+20.0)</span></td>
+            <td class="vh-start cell-hot cell-best">64.6<span class="dlt">(+18.4)</span></td>
+            <td class="cell-hot cell-best">51.4<span class="dlt">(+20.0)</span></td>
+          </tr>
+
+          <tr class="group-row"><td colspan="6">Open-weight models</td></tr>
+
+          <tr class="tg-row-naive">
+            <td class="model-col" rowspan="2">DeepSeek-V4-Flash</td>
+            <td class="method-col">Naive</td>
+            <td class="vh-start">28.5</td><td>15.0</td>
+            <td class="vh-start">27.7</td><td>25.7</td>
+          </tr>
+          <tr class="tg-row model-sep">
+            <td class="method-col">TaskGround</td>
+            <td class="vh-start cell-hot cell-best">63.0<span class="dlt">(+34.5)</span></td>
+            <td class="cell-hot cell-best">36.0<span class="dlt">(+21.0)</span></td>
+            <td class="vh-start cell-hot cell-best">47.7<span class="dlt">(+20.0)</span></td>
+            <td class="cell-hot cell-best">42.9<span class="dlt">(+17.2)</span></td>
+          </tr>
+
+          <tr class="tg-row-naive">
+            <td class="model-col" rowspan="2">MiMo-V2-Flash</td>
+            <td class="method-col">Naive</td>
+            <td class="vh-start">5.0</td><td>1.0</td>
+            <td class="vh-start">10.8</td><td>11.4</td>
+          </tr>
+          <tr class="tg-row model-sep">
+            <td class="method-col">TaskGround</td>
+            <td class="vh-start">43.5<span class="dlt">(+38.5)</span></td>
+            <td>23.0<span class="dlt">(+22.0)</span></td>
+            <td class="vh-start">43.1<span class="dlt">(+32.3)</span></td>
+            <td class="cell-hot">40.0<span class="dlt">(+28.6)</span></td>
+          </tr>
+
+          <tr class="tg-row-naive">
+            <td class="model-col" rowspan="2">Gemma-3-12B</td>
+            <td class="method-col">Naive</td>
+            <td class="vh-start">0.0</td><td>1.0</td>
+            <td class="vh-start">0.0</td><td>5.7</td>
+          </tr>
+          <tr class="tg-row model-sep">
+            <td class="method-col">TaskGround</td>
+            <td class="vh-start">37.0<span class="dlt">(+37.0)</span></td>
+            <td>19.0<span class="dlt">(+18.0)</span></td>
+            <td class="vh-start">29.2<span class="dlt">(+29.2)</span></td>
+            <td class="cell-hot">34.3<span class="dlt">(+28.6)</span></td>
+          </tr>
+
+          <tr class="tg-row-naive">
+            <td class="model-col" rowspan="2">Qwen3.5-9B</td>
+            <td class="method-col">Naive</td>
+            <td class="vh-start">0.0</td><td>10.0</td>
+            <td class="vh-start">1.5</td><td>14.3</td>
+          </tr>
+          <tr class="tg-row">
+            <td class="method-col">TaskGround</td>
+            <td class="vh-start cell-hot">47.5<span class="dlt">(+47.5)</span></td>
+            <td class="cell-hot">29.0<span class="dlt">(+19.0)</span></td>
+            <td class="vh-start">43.1<span class="dlt">(+41.6)</span></td>
+            <td class="cell-hot">40.0<span class="dlt">(+25.7)</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="results-legend">
+      <span class="lg"><span class="sw sw-hot"></span> exceeds GPT-5 Naive</span>
+      <span class="lg"><span class="dlt-demo">(+&Delta;)</span> gain over same-model Naive</span>
+      <span class="lg"><strong>bold</strong> = best within model group</span>
+    </div>
+
+    <figure class="teaser-figure" style="margin-top:2.4rem;">
+      <div class="figure-media">
+        <img src="./static/images/ablation.png" alt="TaskGround ablation on VirtualHome" class="figure-image">
+      </div>
+      <figcaption class="figure-caption">
+        <strong>Ablation on VirtualHome.</strong>
+        <span style="color:#2563eb;font-weight:600;">TaskGround&nbsp;(ours)</span> beats the
+        Naive full-scene baseline, Ground-Act, and Ground-Infer&nbsp;(wo completion)-Execute,
+        approaching the <span style="color:#dc2626;font-weight:600;">GT Scene Slice-Infer-Execute</span>
+        upper bound (red dashed) while using ~18&times; fewer input tokens than Naive.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ====== BibTeX ====== -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-3 has-text-centered">BibTeX</h2>
+    <pre class="bibtex-block"><code>@article{feng2026taskground,
+  title   = {TaskGround: Structured Executable Task Inference for Full-Scene Household Reasoning},
+  author  = {Feng, ZhiYuan and Deng, Yu and An, Ruichuan and Liu, Zhenhua and Li, Qixiu
+             and Wu, Keming and Du, Zhiying and Wang, Weijie and Wang, Haoxiao and Chen, Shuang
+             and Xu, Sicheng and Liang, Yaobo and Yang, Jiaolong and Guo, Baining},
+  journal = {arXiv preprint arXiv:2605.18109},
+  year    = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<!-- ====== Footer ====== -->
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>
+        Page template adapted from
+        <a href="https://nerfies.github.io/" target="_blank" rel="noopener noreferrer">Nerfies</a>.
+        Released under a
+        <a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
+        license.
+      </p>
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>

@@ -1,0 +1,11 @@
+# Paper submission / sources (do not publish)
+*.pdf
+NeurIPS2026_FullHome_Submission.pdf
+
+# Editor / local settings
+.vscode/
+
+# OS files
+.DS_Store
+._*
+Thumbs.db
